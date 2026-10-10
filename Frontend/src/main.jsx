@@ -8,6 +8,7 @@ import Login from "./Login.jsx";
 import Signup from "./Signup.jsx";
 import About from "./About.jsx";
 import Dashboard from "./Dashboard.jsx";
+import AdminDashboard from "./AdminDashboard.jsx";
 import "./styles.css";
 
 const routes = (
@@ -18,6 +19,7 @@ const routes = (
       <Route path="/signup" element={<Signup />} />
       <Route path="/about" element={<About />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/admin" element={<AdminDashboard />} />
     </Routes>
   </BrowserRouter>
 );

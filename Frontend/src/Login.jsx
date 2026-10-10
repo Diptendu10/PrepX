@@ -9,7 +9,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "./services/auth";
+import { loginAdmin, loginUser } from "./services/auth";
 
 export default function Login() {
   const [adminMode, setAdminMode] = useState(false);
@@ -24,37 +24,40 @@ export default function Login() {
 
     setMessage("");
 
-    // Admin login is kept separate from regular user authentication.
-    if (adminMode) {
-      setMessage(
-        "Admin authentication is not connected yet. Please connect a separate admin login endpoint."
-      );
-      return;
-    }
-
     setIsLoading(true);
 
     const formData = new FormData(event.currentTarget);
 
-    const credentials = {
-      email: formData.get("email"),
-      password: formData.get("password"),
-    };
+    const credentials = adminMode
+      ? {
+          adminId: formData.get("adminId"),
+          email: formData.get("email"),
+          password: formData.get("password"),
+        }
+      : {
+          email: formData.get("email"),
+          password: formData.get("password"),
+        };
 
     try {
-      const result = await loginUser(credentials);
+      const result = adminMode
+        ? await loginAdmin(credentials)
+        : await loginUser(credentials);
 
-      // Save the authentication token and logged-in user.
-      sessionStorage.setItem("prepx_token", result.token);
-      sessionStorage.setItem(
-        "prepx_user",
-        JSON.stringify(result.user)
-      );
+      if (adminMode) {
+        sessionStorage.setItem("prepx_admin_token", result.token);
+        sessionStorage.setItem("prepx_admin", JSON.stringify(result.admin));
+      } else {
+        sessionStorage.setItem("prepx_token", result.token);
+        sessionStorage.setItem(
+          "prepx_user",
+          JSON.stringify(result.user)
+        );
+      }
 
-      window.alert("Login successful!");
+      window.alert(adminMode ? "Admin login successful!" : "Login successful!");
 
-      // Redirect after successful login.
-      navigate("/dashboard");
+      navigate(adminMode ? "/admin" : "/dashboard");
     } catch (error) {
       setMessage(
         error.message || "Unable to log in. Please try again."

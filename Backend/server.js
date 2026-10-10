@@ -70,7 +70,11 @@ app.use(
   "/api/upload",
   require("./routes/uploadRoutes")
 );
-
+// Admin routes
+app.use(
+  "/api/admin",
+  require("./routes/adminRoutes")
+);
 // Error-handling middleware
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {

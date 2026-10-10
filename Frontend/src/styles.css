@@ -541,3 +541,374 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offse
     width: 100%;
   }
 }
+/* =====================================
+   PREPX ADMIN DASHBOARD
+===================================== */
+
+.admin-dashboard {
+  min-height: 100vh;
+  background: #f7f8fc;
+  color: #202039;
+}
+
+.admin-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 82px;
+  padding: 14px 5%;
+  background: #fff;
+  border-bottom: 1px solid #e8eaf2;
+  box-shadow: 0 3px 14px rgba(30, 30, 70, 0.03);
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #202039;
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.admin-brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  color: #fff;
+  background: #6c63ff;
+  border-radius: 12px;
+}
+
+.admin-brand-highlight {
+  color: #6c63ff;
+}
+
+.admin-brand small {
+  display: block;
+  margin-top: 5px;
+  color: #88889e;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+}
+
+.admin-nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.admin-nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 12px 15px;
+  color: #65657c;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-nav-button:hover {
+  color: #5b50eb;
+  background: #f0efff;
+  border-color: #e3e0ff;
+}
+
+.admin-profile-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.admin-profile-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: #fff;
+  background: linear-gradient(135deg, #766bff, #5549df);
+  border: 3px solid #eeecff;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.admin-profile-circle:hover {
+  transform: scale(1.06);
+}
+
+.admin-profile-menu {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  z-index: 200;
+  width: 235px;
+  padding: 9px;
+  background: #fff;
+  border: 1px solid #e8eaf2;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(25, 25, 60, 0.14);
+}
+
+.admin-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px;
+  overflow-wrap: anywhere;
+}
+
+.admin-profile-info strong {
+  color: #202039;
+  font-size: 14px;
+}
+
+.admin-profile-info small {
+  color: #85859a;
+  font-size: 12px;
+}
+
+.admin-profile-menu > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 12px;
+  color: #55556c;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.admin-profile-menu > button:hover {
+  color: #5b50eb;
+  background: #f2f1ff;
+}
+
+/* Dashboard main content */
+
+.admin-dashboard-content {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 54px 5%;
+}
+
+.admin-welcome {
+  padding: 34px;
+  background: linear-gradient(120deg, #eeedff, #f8f7ff 70%, #fff);
+  border: 1px solid #e6e3ff;
+  border-radius: 20px;
+}
+
+.admin-eyebrow {
+  margin: 0 0 12px;
+  color: #6257eb;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.admin-welcome h1 {
+  margin: 0 0 12px;
+  color: #202039;
+  font-size: clamp(27px, 3.5vw, 38px);
+  font-weight: 800;
+  letter-spacing: -1.2px;
+}
+
+.admin-welcome > p:last-child {
+  margin: 0;
+  color: #77778e;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.admin-dashboard-heading {
+  margin: 42px 0 22px;
+}
+
+.admin-dashboard-heading h2 {
+  margin: 0 0 8px;
+  color: #24243e;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.admin-dashboard-heading p {
+  margin: 0;
+  color: #85859a;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* Clickable category cards */
+
+.admin-dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.admin-dashboard-card {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  min-height: 225px;
+  padding: 25px;
+  background: #fff;
+  border: 1px solid #e8eaf2;
+  border-radius: 17px;
+  box-shadow: 0 5px 20px rgba(35, 35, 70, 0.035);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.admin-dashboard-card:hover {
+  transform: translateY(-4px);
+  border-color: #d7d2ff;
+  box-shadow: 0 12px 30px rgba(45, 40, 110, 0.09);
+}
+
+.admin-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 49px;
+  height: 49px;
+  margin-bottom: 22px;
+  border-radius: 13px;
+}
+
+.total-icon {
+  color: #6257eb;
+  background: #eeedff;
+}
+
+.completed-icon {
+  color: #17875d;
+  background: #e4f8ee;
+}
+
+.scheduled-icon {
+  color: #c17a16;
+  background: #fff2dd;
+}
+
+.queries-icon {
+  color: #2878a8;
+  background: #e5f4fc;
+}
+
+.admin-card-title {
+  margin-bottom: 9px;
+  color: #252540;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.admin-card-description {
+  margin-bottom: 20px;
+  color: #818198;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.admin-card-link {
+  margin-top: auto;
+  color: #6257eb;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Responsive layout */
+
+@media (max-width: 1050px) {
+  .admin-navbar {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .admin-nav-links {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  .admin-nav-button {
+    flex-shrink: 0;
+  }
+
+  .admin-dashboard-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-navbar {
+    padding: 14px 18px;
+  }
+
+  .admin-brand {
+    font-size: 21px;
+  }
+
+  .admin-nav-links {
+    gap: 6px;
+  }
+
+  .admin-nav-button {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .admin-nav-button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .admin-dashboard-content {
+    padding: 25px 18px;
+  }
+
+  .admin-welcome {
+    padding: 25px 20px;
+  }
+
+  .admin-dashboard-heading {
+    margin-top: 30px;
+  }
+
+  .admin-dashboard-cards {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .admin-dashboard-card {
+    min-height: 200px;
+  }
+}

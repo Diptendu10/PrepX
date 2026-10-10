@@ -28,6 +28,20 @@ export function loginUser(formData) {
   return sendAuthRequest("login", formData);
 }
 
-export function loginWithGoogle(credential) {
-  return sendAuthRequest("google", { credential });
+export async function loginAdmin(formData) {
+  const response = await fetch(`${API_URL}/admin/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Admin login failed.");
+  }
+
+  return data;
 }
