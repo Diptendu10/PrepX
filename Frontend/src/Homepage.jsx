@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import AccountMenu from "./AccountMenu.jsx";
 import {
   ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Check,
   ChevronDown, Code2, Facebook, Instagram, Linkedin, MapPin, Menu,
@@ -97,6 +98,7 @@ function Brand() {
 export function Navbar({ onGetStarted, showMenus = true }) {
   const [openMenu, setOpenMenu] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isLoggedIn = Boolean(sessionStorage.getItem("prepx_token"));
 
   useEffect(() => {
     if (!showMenus) return undefined;
@@ -141,9 +143,13 @@ export function Navbar({ onGetStarted, showMenus = true }) {
               ))}
             </div>
           )}
-          <button className="button button-primary nav-cta" onClick={onGetStarted}>
-            Get Started <ArrowUpRight size={16} />
-          </button>
+          {isLoggedIn ? (
+            <AccountMenu showDashboard />
+          ) : (
+            <button className="button button-primary nav-cta" onClick={onGetStarted}>
+              Get Started <ArrowUpRight size={16} />
+            </button>
+          )}
         </div>
       </nav>
     </header>
@@ -295,7 +301,11 @@ function Footer({ onTerms }) {
 export default function App() {
   const [termsOpen, setTermsOpen] = useState(false);
   const closeTerms = () => setTermsOpen(false);
-  const handleGetStarted = () => { window.location.href = "/login"; };
+  const handleGetStarted = () => {
+    window.location.href = sessionStorage.getItem("prepx_token")
+      ? "/dashboard"
+      : "/login";
+  };
 
   return (
     <>

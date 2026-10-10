@@ -3,9 +3,15 @@ import React from "react";
 import { Navbar } from "./Homepage.jsx";
 
 function About() {
+  const handleGetStarted = () => {
+    window.location.href = sessionStorage.getItem("prepx_token")
+      ? "/dashboard"
+      : "/login";
+  };
+
   return (
     <>
-    <Navbar showMenus={false} onGetStarted={() => { window.location.href = "/login"; }} />
+    <Navbar showMenus={false} onGetStarted={handleGetStarted} />
     <main className="about-page">
       {/* Hero Section */}
       <section className="about-hero">

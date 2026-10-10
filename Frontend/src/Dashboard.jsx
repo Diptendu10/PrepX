@@ -1,9 +1,11 @@
 
 import React, { useState } from "react";
+import AccountMenu from "./AccountMenu.jsx";
+import { getSessionUser } from "./session.js";
 
 function Dashboard() {
-  const [profileOpen, setProfileOpen] = useState(false);
   const [activeOption, setActiveOption] = useState("My Attempts");
+  const firstName = getSessionUser()?.name?.trim()?.split(/\s+/)[0] || "there";
 
   const menuOptions = [
     "My Attempts",
@@ -11,16 +13,6 @@ function Dashboard() {
     "View Schedule",
     "Improvement Needed",
   ];
-
-  const handleLogout = () => {
-    // Replace this with your actual logout logic
-    window.location.href = "/login";
-  };
-
-  const handleSettings = () => {
-    // Replace this with your settings page route
-    window.location.href = "/settings";
-  };
 
   return (
     <div className="dashboard-page">
@@ -44,36 +36,12 @@ function Dashboard() {
           </a>
         </div>
 
-        {/* Profile Menu */}
-        <div className="dashboard-profile">
-          <button
-            className="profile-circle"
-            aria-label="Open profile menu"
-            aria-expanded={profileOpen}
-            onClick={() => setProfileOpen(!profileOpen)}
-          >
-            U
-          </button>
-
-          {profileOpen && (
-            <div className="profile-dropdown">
-              <button onClick={handleSettings}>
-                Settings
-              </button>
-
-              <button onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
-          )}
-        </div>
+        <AccountMenu />
       </header>
 
       <div className="dashboard-layout">
         {/* Sidebar Navigation */}
         <aside className="dashboard-sidebar">
-          <h3 className="sidebar-heading">Dashboard</h3>
-
           <nav className="dashboard-menu">
             {menuOptions.map((option) => (
               <button
@@ -98,7 +66,7 @@ function Dashboard() {
         <main className="dashboard-content">
           <div className="dashboard-welcome">
             <p className="dashboard-eyebrow">PREPX DASHBOARD</p>
-            <h1>Welcome Back!</h1>
+            <h1>Welcome Back, {firstName}!</h1>
             <p>
               Ready to prepare, practice, and perform better in your
               next interview?

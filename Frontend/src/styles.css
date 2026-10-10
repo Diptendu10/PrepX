@@ -224,6 +224,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offse
 @media(max-width:680px){.signup-layout .auth-panel{padding:26px 22px}.signup-layout .auth-subtitle{margin-bottom:20px}.signup-layout .auth-form{gap:13px}}
 @media(max-width:380px){.signup-layout .auth-panel{padding:23px 17px}}
 
+@media(max-width:720px){.nav-right .account-menu{align-self:flex-end}}
+
 .about-page{position:relative;isolation:isolate;min-height:100vh;overflow:hidden;background:radial-gradient(ellipse at 76% 5%,#7664df20,transparent 34%),radial-gradient(ellipse at 13% 54%,#44c7c314,transparent 31%),var(--bg)}
 .about-page:before{position:absolute;z-index:-1;top:90px;right:-195px;width:440px;height:440px;border:1px solid #a79aff13;border-radius:50%;box-shadow:0 0 0 45px #a79aff08,0 0 0 90px #a79aff05;content:""}
 .about-page>section{width:min(1060px,calc(100% - 64px));margin-inline:auto}
@@ -281,6 +283,16 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offse
 
 .dashboard-logo span {
   color: #6c63ff;
+}
+
+.account-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.account-menu .profile-dropdown {
+  top: calc(100% + 10px);
+  right: 0;
 }
 
 .profile-circle {
