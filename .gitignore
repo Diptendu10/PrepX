@@ -1,0 +1,15 @@
+# Excludes dependencies inside both Backend and Frontend
+**/node_modules/
+
+# Excludes frontend build outputs
+**/dist/
+**/build/
+
+# Excludes sensitive environment variables
+**/.env
+**/.env.*
+
+# Excludes logs and system junk
+npm-debug.log*
+.DS_Store
+Thumbs.db
