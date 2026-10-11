@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       select: false,
     },
+    lastQuerySubmittedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -65,6 +65,16 @@ app.use(
   "/api/auth",
   require("./routes/authRoutes")
 );
+// User query requests
+app.use(
+  "/api/queries",
+  require("./routes/queryRoutes")
+);
+// Private interview booking route
+app.use(
+  "/api/interviews",
+  require("./routes/interviewRoutes")
+);
 // Cloudinary upload route
 app.use(
   "/api/upload",

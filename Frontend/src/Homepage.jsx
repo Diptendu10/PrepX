@@ -47,11 +47,11 @@ const menuGroups = [
   {
     label: "Practice",
     items: [
-      ["Mock Interviews", "#mock-interviews"],
-      ["Coding Challenges", "#coding"],
-      ["Question Bank", "#question-bank"],
-      ["Company Preparation", "#companies"],
-      ["Daily Practice", "#daily-practice"]
+      ["General Aptitude", "#general-aptitude"],
+      ["Government Jobs", "#government-jobs"],
+      ["Private Interviews", "/private-interviews"],
+      ["HR Screening", "#hr-screening"],
+      ["Communication Skills", "#communication-skills"]
     ]
   },
   {
