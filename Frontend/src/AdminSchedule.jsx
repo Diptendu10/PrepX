@@ -20,6 +20,7 @@ function formatDateTime(dateTime) {
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: "full",
     timeStyle: "short",
+    timeZone: "Asia/Kolkata",
   }).format(date);
 }
 
@@ -82,7 +83,7 @@ export default function AdminSchedule() {
         <div className="queries-list-heading">
           <div>
             <h2>All Bookings</h2>
-            <p>Scheduled interview times are shown in your local timezone.</p>
+            <p>Interview times are shown in Indian Standard Time (IST).</p>
           </div>
         </div>
 
@@ -115,8 +116,7 @@ export default function AdminSchedule() {
                       {schedule.category || "Interview"}
                     </span>
                     <small className="admin-schedule-difficulty">
-                      {schedule.difficulty || "Level not specified"} ·{" "}
-                      {schedule.durationMinutes || 30} min
+                      {schedule.difficulty || "Level not specified"}
                     </small>
                   </td>
                   <td>

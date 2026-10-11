@@ -9,6 +9,7 @@ const {
   connectDatabase,
   getDatabaseStatus,
 } = require("./config/database");
+const InterviewSchedule = require("./models/InterviewSchedule");
 
 const app = express();
 const DEFAULT_PORT = Number(process.env.PORT) || 5000;
@@ -146,6 +147,17 @@ function startServer(port) {
 async function main() {
   try {
     await connectDatabase();
+
+    const durationCleanup = await InterviewSchedule.updateMany(
+      { durationMinutes: { $exists: true } },
+      { $unset: { durationMinutes: "" } }
+    );
+
+    if (durationCleanup.modifiedCount > 0) {
+      console.log(
+        `Removed duration from ${durationCleanup.modifiedCount} interview schedule(s).`
+      );
+    }
 
     console.log("PrepX database is ready.");
 

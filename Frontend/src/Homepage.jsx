@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import AccountMenu from "./AccountMenu.jsx";
+import { useNavigate } from "react-router-dom";
+import { bookPrivateInterview } from "./services/interviews.js";
 import {
   ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Check,
-  ChevronDown, Code2, Facebook, Instagram, Linkedin, MapPin, Menu,
-  Play, X, Mail, Headphones, Sparkles
+  CheckCircle2, ChevronDown, Clock3, Code2, Facebook, GraduationCap,
+  Instagram, Linkedin, MapPin, Menu, Play, X, Mail, Headphones, Sparkles
 } from "lucide-react";
 
 const media = [
@@ -48,8 +50,8 @@ const menuGroups = [
     label: "Practice",
     items: [
       ["General Aptitude", "#general-aptitude"],
-      ["Government Jobs", "#government-jobs"],
-      ["Private Interviews", "/private-interviews"],
+      ["Government Job Interviews", "/government-interviews"],
+      ["Private Job Interviews", "/private-interviews"],
       ["HR Screening", "#hr-screening"],
       ["Communication Skills", "#communication-skills"]
     ]
@@ -65,6 +67,17 @@ const menuGroups = [
     ]
   }
 ];
+
+const practiceBookings = {
+  "General Aptitude": { categoryId: 38, category: "General Aptitude" },
+  "HR Screening": { categoryId: 43, category: "HR Screening" },
+  "Communication Skills": { categoryId: 44, category: "Communication Skills" }
+};
+
+function getLocalDateValue(date) {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return localDate.toISOString().slice(0, 10);
+}
 
 const founders = [
   {
@@ -96,8 +109,16 @@ function Brand() {
 }
 
 export function Navbar({ onGetStarted, showMenus = true }) {
+  const navigate = useNavigate();
   const [openMenu, setOpenMenu] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [bookingCategory, setBookingCategory] = useState(null);
+  const [bookingLevel, setBookingLevel] = useState("Easy");
+  const [scheduledDate, setScheduledDate] = useState("");
+  const [scheduledTime, setScheduledTime] = useState("");
+  const [isBooking, setIsBooking] = useState(false);
+  const [bookingMessage, setBookingMessage] = useState("");
+  const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
   const isLoggedIn = Boolean(sessionStorage.getItem("prepx_token"));
 
   useEffect(() => {
@@ -109,7 +130,67 @@ export function Navbar({ onGetStarted, showMenus = true }) {
     return () => document.removeEventListener("click", close);
   }, [showMenus]);
 
+  function openPracticeBooking(label, event) {
+    const category = practiceBookings[label];
+    if (!category) {
+      setOpenMenu(null);
+      setMobileOpen(false);
+      return;
+    }
+
+    event.preventDefault();
+    setOpenMenu(null);
+    setMobileOpen(false);
+    if (!sessionStorage.getItem("prepx_token")) {
+      navigate("/login");
+      return;
+    }
+
+    setBookingCategory(category);
+    setBookingLevel("Easy");
+    setScheduledDate("");
+    setScheduledTime("");
+    setBookingMessage("");
+    setIsBookingConfirmed(false);
+  }
+
+  async function confirmPracticeBooking() {
+    const interviewDateTime = new Date(
+      `${scheduledDate}T${scheduledTime}:00`
+    );
+    if (
+      !scheduledDate ||
+      !/^(?:[01]\d|2[0-3]):(?:00|30)$/.test(scheduledTime) ||
+      interviewDateTime.getTime() <= Date.now()
+    ) {
+      setBookingMessage(
+        "Choose a future interview time on the hour or half-hour."
+      );
+      return;
+    }
+
+    setIsBooking(true);
+    setBookingMessage("");
+    try {
+      await bookPrivateInterview({
+        ...bookingCategory,
+        difficulty: bookingLevel,
+        scheduledAt: interviewDateTime.toISOString(),
+        scheduledTime
+      });
+      setIsBookingConfirmed(true);
+      setBookingMessage("Your interview booking has been recorded.");
+    } catch (error) {
+      setBookingMessage(
+        error.message || "Unable to book your interview. Please try again."
+      );
+    } finally {
+      setIsBooking(false);
+    }
+  }
+
   return (
+    <>
     <header className="site-header">
       <nav className={`navbar container ${showMenus ? "" : "navbar-simple"}`} aria-label="Main navigation">
         <Brand />
@@ -133,7 +214,14 @@ export function Navbar({ onGetStarted, showMenus = true }) {
                     <div className="dropdown">
                       <div className="dropdown-heading">{group.label} with PrepX</div>
                       {group.items.map(([label, href], index) => (
-                        <a key={label} href={href} onClick={() => { setOpenMenu(null); setMobileOpen(false); }}>
+                        <a key={label} href={href} onClick={(event) => {
+                          if (group.label === "Practice") {
+                            openPracticeBooking(label, event);
+                          } else {
+                            setOpenMenu(null);
+                            setMobileOpen(false);
+                          }
+                        }}>
                           <span className="dropdown-number">0{index + 1}</span>{label}<ArrowUpRight size={14} />
                         </a>
                       ))}
@@ -153,6 +241,140 @@ export function Navbar({ onGetStarted, showMenus = true }) {
         </div>
       </nav>
     </header>
+    {bookingCategory && (
+      <div
+        className="private-interview-modal-overlay"
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget && !isBooking) {
+            setBookingCategory(null);
+          }
+        }}
+      >
+        <section
+          className="private-interview-modal private-interview-booking-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="homepage-practice-booking-title"
+        >
+          <div className="private-interview-modal-header">
+            <div>
+              <span className="private-interview-modal-eyebrow">
+                PRACTICE INTERVIEW BOOKING
+              </span>
+              <h2 id="homepage-practice-booking-title">Confirm your interview</h2>
+            </div>
+            <button
+              type="button"
+              className="private-interview-modal-close"
+              onClick={() => setBookingCategory(null)}
+              disabled={isBooking}
+              aria-label="Close booking confirmation"
+            >
+              <X size={21} />
+            </button>
+          </div>
+          <div className="private-interview-modal-body">
+            <div className="private-interview-modal-meta">
+              <span>
+                <GraduationCap size={16} />
+                {bookingCategory.category}
+              </span>
+              <span>
+                <Clock3 size={16} />
+                30 minutes
+              </span>
+              <span>
+                <CheckCircle2 size={16} />
+                {bookingLevel} level
+              </span>
+            </div>
+            <div className="private-interview-schedule-fields">
+              <label className="private-interview-schedule-field">
+                <span>Difficulty level</span>
+                <select
+                  value={bookingLevel}
+                  onChange={(event) => setBookingLevel(event.target.value)}
+                  disabled={isBooking || isBookingConfirmed}
+                >
+                  <option value="Easy">Easy</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </label>
+              <label className="private-interview-schedule-field">
+                <span>Interview date</span>
+                <input
+                  type="date"
+                  value={scheduledDate}
+                  min={getLocalDateValue(new Date())}
+                  onChange={(event) => {
+                    setScheduledDate(event.target.value);
+                    setScheduledTime("");
+                    setBookingMessage("");
+                  }}
+                  disabled={isBooking || isBookingConfirmed}
+                  required
+                />
+              </label>
+              <label className="private-interview-schedule-field">
+                <span>Interview time</span>
+                <select
+                  value={scheduledTime}
+                  onChange={(event) => {
+                    setScheduledTime(event.target.value);
+                    setBookingMessage("");
+                  }}
+                  disabled={!scheduledDate || isBooking || isBookingConfirmed}
+                  required
+                >
+                  <option value="" disabled>
+                    {scheduledDate ? "Select a time" : "Choose a date first"}
+                  </option>
+                  {Array.from({ length: 48 }, (_, index) => {
+                    const hour = Math.floor(index / 2);
+                    const minute = index % 2 === 0 ? "00" : "30";
+                    const value = `${String(hour).padStart(2, "0")}:${minute}`;
+                    const slot = new Date(`${scheduledDate}T${value}:00`);
+                    return slot.getTime() > Date.now() ? (
+                      <option key={value} value={value}>
+                        {`${hour % 12 || 12}:${minute} ${
+                          hour < 12 ? "AM" : "PM"
+                        }`}
+                      </option>
+                    ) : null;
+                  })}
+                </select>
+              </label>
+            </div>
+            <p className="private-interview-roles-description">
+              Choose a future time in 30-minute intervals. Your booking will
+              appear in your schedule and the admin schedule.
+            </p>
+            {!isBookingConfirmed ? (
+              <button
+                type="button"
+                className="private-interview-modal-confirm"
+                onClick={confirmPracticeBooking}
+                disabled={isBooking || !scheduledDate || !scheduledTime}
+              >
+                <CheckCircle2 size={17} />
+                {isBooking ? "Booking..." : "Confirm Booking"}
+              </button>
+            ) : (
+              <div className="private-interview-booking-confirmed">
+                <p role="status">{bookingMessage}</p>
+              </div>
+            )}
+            {!isBookingConfirmed && bookingMessage && (
+              <p className="private-interview-booking-error" role="alert">
+                {bookingMessage}
+              </p>
+            )}
+          </div>
+        </section>
+      </div>
+    )}
+    </>
   );
 }
 

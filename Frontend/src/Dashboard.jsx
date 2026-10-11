@@ -22,6 +22,7 @@ function formatScheduleDateTime(dateTime) {
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: "full",
     timeStyle: "short",
+    timeZone: "Asia/Kolkata",
   }).format(date);
 }
 
@@ -282,6 +283,15 @@ function Dashboard() {
                       <strong>Interview time:</strong>{" "}
                       {formatScheduleDateTime(schedule.scheduledAt)}
                     </p>
+                    <div className="dashboard-schedule-card-actions">
+                      <button
+                        className="dashboard-schedule-join-button"
+                        type="button"
+                        onClick={() => navigate(`/interview/${schedule._id}`)}
+                      >
+                        Join Interview
+                      </button>
+                    </div>
                   </article>
                 ))}
               </div>

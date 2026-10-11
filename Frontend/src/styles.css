@@ -506,6 +506,29 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offse
   color: #33334b;
 }
 
+.dashboard-schedule-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.dashboard-schedule-join-button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 9px;
+  background: #6c63ff;
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dashboard-schedule-join-button:disabled {
+  background: #e6e5f2;
+  color: #77778d;
+  cursor: not-allowed;
+}
+
 /* Primary action button */
 
 .dashboard-primary-button {
@@ -2451,4 +2474,973 @@ font-size: 19px;
 grid-template-columns: 1fr;
 gap: 0;
 }
+}
+
+.gov-interviews-page {
+  min-height: 100vh;
+  padding: 40px 7%;
+  background: #f7f8fc;
+  color: #20243a;
+  font-family: Arial, sans-serif;
+}
+
+.gov-interviews-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.gov-interviews-eyebrow {
+  margin: 0 0 10px;
+  color: #5b5bd6;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.gov-interviews-header h1 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.25;
+}
+
+.gov-interviews-subtitle {
+  max-width: 650px;
+  margin: 12px 0 0;
+  color: #70758a;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.gov-interviews-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 105px;
+  height: 100px;
+  border: 1px solid #e4e5f2;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.gov-interviews-count strong {
+  color: #5b5bd6;
+  font-size: 30px;
+}
+
+.gov-interviews-count span {
+  margin-top: 4px;
+  color: #777b8e;
+  font-size: 12px;
+}
+
+.gov-interviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gov-interview-item {
+  display: grid;
+  grid-template-columns: 44px minmax(180px, 1fr) 145px 120px;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 22px;
+  border: 1px solid #e8e9f1;
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.gov-interview-item:hover {
+  border-color: #c9c9f5;
+  box-shadow: 0 5px 18px rgba(42, 45, 90, 0.06);
+}
+
+.gov-interview-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #f0f0ff;
+  color: #5b5bd6;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.gov-interview-info h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.gov-interview-duration {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 8px 0 0;
+  color: #777b8e;
+  font-size: 13px;
+}
+
+.gov-interview-duration span {
+  font-size: 17px;
+}
+
+.gov-interview-level {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.gov-interview-level label {
+  color: #777b8e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.gov-interview-level select {
+  width: 100%;
+  padding: 10px 9px;
+  border: 1px solid #dedfea;
+  border-radius: 7px;
+  outline: none;
+  background: #fff;
+  color: #292d43;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.gov-interview-level select:focus {
+  border-color: #5b5bd6;
+}
+
+.gov-interview-details-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border: 1px solid #d8d8fa;
+  border-radius: 8px;
+  background: #f4f4ff;
+  color: #5151c8;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.gov-interview-details-button:hover {
+  background: #5b5bd6;
+  color: #fff;
+}
+
+.gov-interview-details-button span {
+  font-size: 17px;
+}
+
+.gov-interview-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(19, 22, 43, 0.55);
+  overflow-y: auto;
+}
+
+.gov-interview-modal {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  max-height: 85vh;
+  padding: 30px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  animation: govInterviewModalIn 0.2s ease-out;
+}
+
+@keyframes govInterviewModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gov-interview-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 18px;
+  width: 35px;
+  height: 35px;
+  border: none;
+  border-radius: 50%;
+  background: #f0f1f7;
+  color: #42465b;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.gov-interview-modal-close:hover {
+  background: #e5e5f5;
+}
+
+.gov-interview-modal h2 {
+  margin: 0 35px 15px 0;
+  font-size: 23px;
+  line-height: 1.4;
+}
+
+.gov-interview-modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.gov-interview-modal-meta span {
+  padding: 8px 11px;
+  border-radius: 7px;
+  background: #f1f1ff;
+  color: #5555c8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.gov-interview-modal h3 {
+  margin: 0 0 14px;
+  font-size: 16px;
+}
+
+.gov-interview-roles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gov-interview-roles li {
+  padding: 12px;
+  border: 1px solid #e8e9f2;
+  border-radius: 8px;
+  background: #fafaff;
+  color: #45495e;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.gov-interview-roles li::before {
+  content: "✓";
+  margin-right: 7px;
+  color: #5b5bd6;
+  font-weight: 700;
+}
+
+.gov-interview-modal-done {
+  width: 100%;
+  margin-top: 25px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #5b5bd6;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gov-interview-modal-done:hover {
+  background: #4848ba;
+}
+
+@media (max-width: 760px) {
+  .gov-interviews-page {
+    padding: 25px 16px;
+  }
+
+  .gov-interviews-header {
+    align-items: flex-start;
+  }
+
+  .gov-interviews-count {
+    width: 80px;
+    height: 82px;
+  }
+
+  .gov-interviews-count strong {
+    font-size: 24px;
+  }
+
+  .gov-interview-item {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .gov-interview-number {
+    width: 38px;
+    height: 38px;
+  }
+
+  .gov-interview-level {
+    grid-column: 2;
+  }
+
+  .gov-interview-details-button {
+    grid-column: 2;
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .gov-interviews-header {
+    flex-direction: column;
+  }
+
+  .gov-interview-roles {
+    grid-template-columns: 1fr;
+  }
+
+  .gov-interview-modal {
+    padding: 24px 18px;
+  }
+}
+
+/* Interview Interface */
+
+.interview-interface {
+  min-height: 100vh;
+  padding: 32px 5%;
+  background: #f6f7fb;
+  color: #20243a;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.interview-interface *,
+.interview-interface *::before,
+.interview-interface *::after {
+  box-sizing: border-box;
+}
+
+.ii-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.ii-header-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+
+.ii-back-button {
+  display: inline-flex;
+  flex: 0 0 40px;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-top: 2px;
+  border: 1px solid #e2e4ec;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #44445d;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.ii-back-button:hover {
+  border-color: #c9c6ff;
+  background: #f0f0ff;
+  color: #5b5bd6;
+}
+
+.ii-eyebrow {
+  margin: 0 0 9px;
+  color: #5b5bd6;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.ii-header h1 {
+  margin: 0;
+  font-size: clamp(26px, 3vw, 34px);
+}
+
+.ii-subtitle {
+  margin: 10px 0 0;
+  color: #777b8e;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.ii-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border: 1px solid #e2e4ec;
+  border-radius: 30px;
+  background: #fff;
+  color: #686d80;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ii-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a1a5b5;
+}
+
+.ii-status-live .ii-status-dot {
+  background: #20ad73;
+  box-shadow: 0 0 0 4px #e2f7ed;
+}
+
+.ii-status-live {
+  color: #168658;
+}
+
+.ii-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.9fr);
+  align-items: stretch;
+  gap: 22px;
+}
+
+.ii-main-panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  min-width: 0;
+}
+
+.ii-panel,
+.ii-chat-panel {
+  min-width: 0;
+  border: 1px solid #e6e8f0;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 5px 20px rgba(35, 39, 80, 0.035);
+}
+
+.ii-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+}
+
+.ii-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ii-panel-heading h2,
+.ii-chat-heading h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.ii-panel-label {
+  padding: 6px 9px;
+  border-radius: 6px;
+  background: #f0f0ff;
+  color: #5757c9;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ii-camera-screen,
+.ii-blank-screen {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 200px;
+  overflow: hidden;
+  border: 1px solid #292d44;
+  border-radius: 10px;
+  background: #171a2a;
+}
+
+.ii-video {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: none;
+}
+
+.ii-video-visible {
+  display: block;
+}
+
+.ii-camera-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.ii-camera-toggle {
+  padding: 9px 13px;
+  border: 1px solid #d9d9e8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #393951;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.ii-camera-toggle:hover:not(:disabled) {
+  border-color: #5b5bd6;
+  background: #f3f2ff;
+}
+
+.ii-camera-toggle:disabled {
+  color: #85859a;
+  cursor: not-allowed;
+}
+
+.ii-camera-placeholder,
+.ii-blank-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  text-align: center;
+}
+
+.ii-camera-placeholder {
+  color: #fff;
+}
+
+.ii-camera-icon,
+.ii-blank-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #c9c9ff;
+  font-size: 29px;
+}
+
+.ii-camera-placeholder h3,
+.ii-blank-placeholder h3 {
+  margin: 0 0 9px;
+  font-size: 15px;
+}
+
+.ii-camera-placeholder p,
+.ii-blank-placeholder p {
+  max-width: 230px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.ii-camera-placeholder p {
+  color: #b8bbcf;
+}
+
+.ii-blank-screen {
+  border-color: #e5e6ef;
+  background: #fafaff;
+}
+
+.ii-blank-icon {
+  border-color: #e4e4fa;
+  background: #f0f0ff;
+  color: #6666d9;
+}
+
+.ii-blank-placeholder {
+  color: #30344a;
+}
+
+.ii-blank-placeholder p {
+  color: #85899b;
+}
+
+.ii-panel-description {
+  margin: 14px 0 0;
+  color: #85899b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.ii-motion-status {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid #e2e0ff;
+  border-radius: 9px;
+  background: #f5f4ff;
+  color: #4948a5;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ii-motion-status.is-error {
+  border-color: #f0caca;
+  background: #fff5f5;
+  color: #a52b2b;
+}
+
+.ii-motion-note {
+  margin: 9px 0 0;
+  color: #85899b;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.ii-error {
+  margin: 12px 0 0;
+  color: #c03535;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.ii-chat-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 430px;
+  padding: 20px;
+}
+
+.ii-chat-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #ececf3;
+}
+
+.ii-chat-heading p {
+  margin: 7px 0 0;
+  color: #85899b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ii-chat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #f0f0ff;
+  color: #5b5bd6;
+  font-size: 20px;
+}
+
+.ii-chat-messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 240px;
+  max-height: 400px;
+  padding: 18px 0;
+  overflow-y: auto;
+}
+
+.ii-chat-empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 5px;
+  text-align: center;
+}
+
+.ii-chat-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 15px;
+  border-radius: 14px;
+  background: #f0f0ff;
+  color: #5b5bd6;
+  font-size: 24px;
+}
+
+.ii-chat-empty h3 {
+  margin: 0 0 9px;
+  font-size: 14px;
+}
+
+.ii-chat-empty p {
+  max-width: 230px;
+  margin: 0;
+  color: #85899b;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.ii-message {
+  align-self: flex-end;
+  max-width: 90%;
+  padding: 11px 13px;
+  border-radius: 12px 12px 3px 12px;
+  background: #f0f0ff;
+  overflow-wrap: anywhere;
+}
+
+.ii-message-sender {
+  color: #5b5bd6;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.ii-message p {
+  margin: 5px 0 0;
+  color: #30344a;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.ii-chat-form {
+  display: flex;
+  gap: 8px;
+  padding-top: 15px;
+  border-top: 1px solid #ececf3;
+}
+
+.ii-voice-status {
+  margin: 10px 0 0;
+  color: #5b5bd6;
+  font-size: 12px;
+}
+
+.ii-chat-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e0e2eb;
+  border-radius: 8px;
+  outline: none;
+  background: #fafaff;
+  color: #292d43;
+  font-size: 12px;
+}
+
+.ii-chat-form input:focus {
+  border-color: #7777e5;
+}
+
+.ii-chat-form button {
+  padding: 0 15px;
+  border: none;
+  border-radius: 8px;
+  background: #5b5bd6;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ii-chat-form button:hover {
+  background: #4848ba;
+}
+
+.ii-chat-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ii-chat-form .ii-voice-button {
+  display: inline-flex;
+  flex: 0 0 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #dfe0ed;
+  background: #f3f2ff;
+  color: #5b5bd6;
+}
+
+.ii-chat-form .ii-voice-button:hover {
+  background: #e7e5ff;
+}
+
+.ii-chat-form .ii-voice-button.is-listening {
+  background: #fff0f0;
+  color: #c03535;
+}
+
+.ii-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 22px;
+  padding: 18px 20px;
+  border: 1px solid #e6e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.ii-footer-note {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #777b8e;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.ii-security-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #e5f8ee;
+  color: #178755;
+  font-weight: 700;
+}
+
+.ii-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ii-start-button,
+.ii-stop-button {
+  padding: 12px 17px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ii-start-button {
+  background: #5b5bd6;
+  color: #fff;
+}
+
+.ii-start-button:hover {
+  background: #4848ba;
+}
+
+.ii-start-button:disabled,
+.ii-start-button:disabled:hover {
+  background: #b9b8dc;
+  cursor: not-allowed;
+}
+
+.ii-stop-button {
+  border: 1px solid #e4bcbc;
+  background: #fff;
+  color: #b93838;
+}
+
+.ii-stop-button:hover {
+  background: #fff1f1;
+}
+
+@media (max-width: 1050px) {
+  .ii-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .ii-chat-panel {
+    min-height: 380px;
+  }
+}
+
+@media (max-width: 650px) {
+  .interview-interface {
+    padding: 22px 15px;
+  }
+
+  .ii-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ii-header-main {
+    width: 100%;
+  }
+
+  .ii-main-panels {
+    grid-template-columns: 1fr;
+  }
+
+  .ii-camera-screen,
+  .ii-blank-screen {
+    aspect-ratio: 4 / 3;
+  }
+
+  .ii-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ii-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .ii-start-button,
+  .ii-stop-button {
+    width: 100%;
+  }
 }

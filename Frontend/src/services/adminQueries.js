@@ -1,12 +1,15 @@
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import {
+  getSessionToken,
+  handleUnauthorizedSession,
+} from "../session.js";
 
 export async function getAdminQueries() {
-  const token = sessionStorage.getItem("prepx_admin_token");
-
-  if (!token) {
-    throw new Error("Please log in as an admin to view queries.");
-  }
+  const token = getSessionToken(
+    "prepx_admin_token",
+    "Please log in as an admin to view queries."
+  );
 
   const response = await fetch(`${API_URL}/queries`, {
     headers: {
@@ -14,6 +17,7 @@ export async function getAdminQueries() {
     },
   });
 
+  handleUnauthorizedSession(response, "prepx_admin_token");
   const data = await response.json();
 
   if (!response.ok) {
@@ -24,11 +28,10 @@ export async function getAdminQueries() {
 }
 
 export async function sendQueryFeedback(queryId, message) {
-  const token = sessionStorage.getItem("prepx_admin_token");
-
-  if (!token) {
-    throw new Error("Please log in as an admin to send feedback.");
-  }
+  const token = getSessionToken(
+    "prepx_admin_token",
+    "Please log in as an admin to send feedback."
+  );
 
   const response = await fetch(
     `${API_URL}/queries/${encodeURIComponent(queryId)}/feedback`,
@@ -42,6 +45,7 @@ export async function sendQueryFeedback(queryId, message) {
     }
   );
 
+  handleUnauthorizedSession(response, "prepx_admin_token");
   const data = await response.json();
 
   if (!response.ok) {

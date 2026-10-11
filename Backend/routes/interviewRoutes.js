@@ -5,6 +5,21 @@ const InterviewSchedule = require("../models/InterviewSchedule");
 
 const router = express.Router();
 
+function toISTDateTimeString(date) {
+  const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+  return `${new Date(date.getTime() + IST_OFFSET_MS)
+    .toISOString()
+    .slice(0, -1)}+05:30`;
+}
+
+function sortSchedulesByTime(schedules) {
+  return schedules.sort(
+    (first, second) =>
+      new Date(first.scheduledAt).getTime() -
+      new Date(second.scheduledAt).getTime()
+  );
+}
+
 function verifyAdminRequest(req, res) {
   const authorization = req.get("authorization");
   const token = authorization?.startsWith("Bearer ")
@@ -56,9 +71,9 @@ router.get("/", async (req, res) => {
       return;
     }
 
-    const schedules = await InterviewSchedule.find()
-      .sort({ scheduledAt: 1 })
-      .lean();
+    const schedules = sortSchedulesByTime(
+      await InterviewSchedule.find().lean()
+    );
 
     return res.status(200).json({ success: true, schedules });
   } catch (error) {
@@ -109,11 +124,9 @@ router.get("/mine", async (req, res) => {
       });
     }
 
-    const schedules = await InterviewSchedule.find({
-      userId: payload.userId,
-    })
-      .sort({ scheduledAt: 1 })
-      .lean();
+    const schedules = sortSchedulesByTime(
+      await InterviewSchedule.find({ userId: payload.userId }).lean()
+    );
 
     return res.status(200).json({ success: true, schedules });
   } catch (error) {
@@ -184,11 +197,11 @@ router.post("/book", async (req, res) => {
     if (
       !Number.isInteger(categoryId) ||
       categoryId < 1 ||
-      categoryId > 42 ||
+      categoryId > 100 ||
       typeof category !== "string" ||
       category.trim().length === 0 ||
       category.trim().length > 120 ||
-      !["Easy", "Medium", "Hard"].includes(difficulty) ||
+      !["Easy", "Medium", "Hard", "High"].includes(difficulty) ||
       (typeof scheduledTime !== "string" &&
         interviewDateTime &&
         ![0, 30].includes(interviewDateTime.getUTCMinutes())) ||
@@ -212,9 +225,8 @@ router.post("/book", async (req, res) => {
       categoryId,
       category: category.trim(),
       difficulty,
-      scheduledAt: interviewDateTime,
-      bookedAt: new Date(),
-      durationMinutes: 30,
+      scheduledAt: toISTDateTimeString(interviewDateTime),
+      bookedAt: toISTDateTimeString(new Date()),
     });
 
     return res.status(201).json({

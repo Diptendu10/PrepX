@@ -23,7 +23,7 @@ const interviewScheduleSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 1,
-      max: 42,
+      max: 100,
     },
     category: {
       type: String,
@@ -32,22 +32,16 @@ const interviewScheduleSchema = new mongoose.Schema(
     },
     difficulty: {
       type: String,
-      enum: ["Easy", "Medium", "Hard"],
+      enum: ["Easy", "Medium", "Hard", "High"],
       required: true,
     },
     scheduledAt: {
-      type: Date,
+      type: String,
       required: true,
     },
     bookedAt: {
-      type: Date,
+      type: String,
       required: true,
-      default: Date.now,
-    },
-    durationMinutes: {
-      type: Number,
-      required: true,
-      default: 30,
     },
     status: {
       type: String,
@@ -56,7 +50,7 @@ const interviewScheduleSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true,
+    timestamps: false,
     collection: "Interview Schedule",
   }
 );

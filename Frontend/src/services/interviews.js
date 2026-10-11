@@ -1,12 +1,15 @@
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import {
+  getSessionToken,
+  handleUnauthorizedSession,
+} from "../session.js";
 
 export async function bookPrivateInterview(booking) {
-  const token = sessionStorage.getItem("prepx_token");
-
-  if (!token) {
-    throw new Error("Please log in to book an interview.");
-  }
+  const token = getSessionToken(
+    "prepx_token",
+    "Please log in to book an interview."
+  );
 
   const response = await fetch(`${API_URL}/interviews/book`, {
     method: "POST",
@@ -17,6 +20,7 @@ export async function bookPrivateInterview(booking) {
     body: JSON.stringify(booking),
   });
 
+  handleUnauthorizedSession(response, "prepx_token");
   const data = await response.json();
 
   if (!response.ok) {
@@ -27,11 +31,7 @@ export async function bookPrivateInterview(booking) {
 }
 
 async function getInterviewSchedules(endpoint, tokenKey, message) {
-  const token = sessionStorage.getItem(tokenKey);
-
-  if (!token) {
-    throw new Error(message);
-  }
+  const token = getSessionToken(tokenKey, message);
 
   const response = await fetch(`${API_URL}/interviews${endpoint}`, {
     headers: {
@@ -39,6 +39,7 @@ async function getInterviewSchedules(endpoint, tokenKey, message) {
     },
   });
 
+  handleUnauthorizedSession(response, tokenKey);
   const data = await response.json();
 
   if (!response.ok) {

@@ -1,12 +1,15 @@
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import {
+  getSessionToken,
+  handleUnauthorizedSession,
+} from "../session.js";
 
 export async function submitQueryRequest(query) {
-  const token = sessionStorage.getItem("prepx_token");
-
-  if (!token) {
-    throw new Error("Please log in again to submit a query.");
-  }
+  const token = getSessionToken(
+    "prepx_token",
+    "Please log in again to submit a query."
+  );
 
   const response = await fetch(`${API_URL}/queries`, {
     method: "POST",
@@ -17,6 +20,7 @@ export async function submitQueryRequest(query) {
     body: JSON.stringify(query),
   });
 
+  handleUnauthorizedSession(response, "prepx_token");
   const data = await response.json();
 
   if (!response.ok) {
@@ -27,11 +31,10 @@ export async function submitQueryRequest(query) {
 }
 
 export async function getUserQuerySolutions() {
-  const token = sessionStorage.getItem("prepx_token");
-
-  if (!token) {
-    throw new Error("Please log in again to view your solutions.");
-  }
+  const token = getSessionToken(
+    "prepx_token",
+    "Please log in again to view your solutions."
+  );
 
   const response = await fetch(`${API_URL}/queries/mine`, {
     headers: {
@@ -39,6 +42,7 @@ export async function getUserQuerySolutions() {
     },
   });
 
+  handleUnauthorizedSession(response, "prepx_token");
   const data = await response.json();
 
   if (!response.ok) {
