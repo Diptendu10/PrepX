@@ -38,6 +38,7 @@ function Dashboard() {
   const [interviewSchedules, setInterviewSchedules] = useState([]);
   const [isLoadingSchedule, setIsLoadingSchedule] = useState(false);
   const [scheduleError, setScheduleError] = useState("");
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
   const firstName = getSessionUser()?.name?.trim()?.split(/\s+/)[0] || "there";
 
   const menuOptions = [
@@ -118,6 +119,22 @@ function Dashboard() {
 
     return () => {
       isMounted = false;
+    };
+  }, [activeOption]);
+
+  useEffect(() => {
+    if (activeOption !== "View Schedule") {
+      return undefined;
+    }
+
+    setCurrentTime(Date.now());
+    const refreshInterval = window.setInterval(
+      () => setCurrentTime(Date.now()),
+      1000
+    );
+
+    return () => {
+      window.clearInterval(refreshInterval);
     };
   }, [activeOption]);
 
@@ -270,30 +287,52 @@ function Dashboard() {
                     </div>
                   )}
 
-                {interviewSchedules.filter(Boolean).map((schedule, index) => (
-                  <article
-                    className="dashboard-schedule-card"
-                    key={schedule._id || `schedule-${index}`}
-                  >
-                    <div className="dashboard-schedule-card-heading">
-                      <h3>{schedule.category || "Interview"}</h3>
-                      <span>{schedule.difficulty || "Level not specified"}</span>
-                    </div>
-                    <p>
-                      <strong>Interview time:</strong>{" "}
-                      {formatScheduleDateTime(schedule.scheduledAt)}
-                    </p>
-                    <div className="dashboard-schedule-card-actions">
-                      <button
-                        className="dashboard-schedule-join-button"
-                        type="button"
-                        onClick={() => navigate(`/interview/${schedule._id}`)}
-                      >
-                        Join Interview
-                      </button>
-                    </div>
-                  </article>
-                ))}
+                {interviewSchedules.filter(Boolean).map((schedule, index) => {
+                  const scheduledAt = Date.parse(schedule.scheduledAt);
+                  const isExpired =
+                    Number.isFinite(scheduledAt) &&
+                    scheduledAt <= currentTime;
+
+                  return (
+                    <article
+                      className="dashboard-schedule-card"
+                      key={schedule._id || `schedule-${index}`}
+                    >
+                      <div className="dashboard-schedule-card-heading">
+                        <h3>{schedule.category || "Interview"}</h3>
+                        <div className="dashboard-schedule-card-badges">
+                          <span>
+                            {schedule.difficulty || "Level not specified"}
+                          </span>
+                          {isExpired && (
+                            <span
+                              className="dashboard-schedule-status-expired"
+                              role="status"
+                            >
+                              Expired
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <p>
+                        <strong>Interview time:</strong>{" "}
+                        {formatScheduleDateTime(schedule.scheduledAt)}
+                      </p>
+                      <div className="dashboard-schedule-card-actions">
+                        <button
+                          className="dashboard-schedule-join-button"
+                          type="button"
+                          disabled={isExpired}
+                          onClick={() =>
+                            navigate(`/interview/${schedule._id}`)
+                          }
+                        >
+                          Join Interview
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             )}
 

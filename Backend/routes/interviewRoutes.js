@@ -2,6 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const InterviewSchedule = require("../models/InterviewSchedule");
+const UserResponse = require("../models/UserResponse");
 
 const router = express.Router();
 
@@ -63,6 +64,109 @@ function verifyAdminRequest(req, res) {
   }
 
   return true;
+}
+
+function getUserIdFromRequest(req, res) {
+  const authorization = req.get("authorization");
+  const token = authorization?.startsWith("Bearer ")
+    ? authorization.slice("Bearer ".length)
+    : null;
+
+  if (!token) {
+    res.status(401).json({
+      success: false,
+      message: "Please log in to access your interview responses.",
+    });
+    return null;
+  }
+
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not configured.");
+  }
+
+  let payload;
+  try {
+    payload = jwt.verify(token, process.env.JWT_SECRET);
+  } catch {
+    res.status(401).json({
+      success: false,
+      message: "Your session has expired. Please log in again.",
+    });
+    return null;
+  }
+
+  if (
+    !payload ||
+    typeof payload !== "object" ||
+    typeof payload.userId !== "string"
+  ) {
+    res.status(401).json({
+      success: false,
+      message: "Invalid user session.",
+    });
+    return null;
+  }
+
+  return payload.userId;
+}
+
+async function findUserInterview(interviewId, userId) {
+  if (!/^[\da-f]{24}$/i.test(interviewId)) {
+    return null;
+  }
+
+  return InterviewSchedule.findOne({
+    _id: interviewId,
+    userId,
+  });
+}
+
+async function getInterviewResponses(interview, userId) {
+  const filter = {
+    scheduledInterviewId: interview._id,
+    accountId: userId,
+  };
+  const records = await UserResponse.collection
+    .find(filter)
+    .sort({ _id: 1 })
+    .toArray();
+
+  if (records.length === 0) {
+    return [];
+  }
+
+  const responses = records.flatMap((record) => [
+    ...(Array.isArray(record.responses) ? record.responses : []),
+    ...(typeof record.response === "string" ? [record.response] : []),
+  ]);
+  const [primaryRecord, ...duplicateRecords] = records;
+
+  if (
+    records.length !== 1 ||
+    !Array.isArray(primaryRecord.responses) ||
+    typeof primaryRecord.response === "string"
+  ) {
+    await UserResponse.collection.updateOne(
+      { _id: primaryRecord._id },
+      {
+        $set: {
+          interviewerName: interview.category,
+          accountId: interview.userId,
+          scheduledInterviewId: interview._id,
+          responses,
+        },
+        $unset: { response: "" },
+      }
+    );
+
+    if (duplicateRecords.length > 0) {
+      await UserResponse.collection.deleteMany({
+        _id: { $in: duplicateRecords.map((record) => record._id) },
+      });
+    }
+  }
+
+  return responses;
 }
 
 router.get("/", async (req, res) => {
@@ -134,6 +238,118 @@ router.get("/mine", async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Unable to load your interview schedule. Please try again.",
+    });
+  }
+});
+
+router.get("/:interviewId/responses", async (req, res) => {
+  try {
+    const userId = getUserIdFromRequest(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const interview = await findUserInterview(
+      req.params.interviewId,
+      userId
+    );
+    if (!interview) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview booking not found.",
+      });
+    }
+
+    const responses = await getInterviewResponses(interview, userId);
+
+    return res.status(200).json({ success: true, responses });
+  } catch (error) {
+    console.error("Interview response retrieval error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load your interview responses. Please try again.",
+    });
+  }
+});
+
+router.post("/:interviewId/responses", async (req, res) => {
+  try {
+    const userId = getUserIdFromRequest(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const interview = await findUserInterview(
+      req.params.interviewId,
+      userId
+    );
+    if (!interview) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview booking not found.",
+      });
+    }
+
+    const response =
+      typeof req.body?.response === "string"
+        ? req.body.response.trim()
+        : "";
+    if (response.length === 0 || response.length > 2000) {
+      return res.status(400).json({
+        success: false,
+        message: "Responses must be between 1 and 2000 characters.",
+      });
+    }
+
+    const filter = {
+      scheduledInterviewId: interview._id,
+      accountId: userId,
+    };
+    const existing = await UserResponse.collection.findOne(filter);
+    if (existing) {
+      await getInterviewResponses(interview, userId);
+    }
+
+    let updatedRecord;
+    try {
+      updatedRecord = await UserResponse.findOneAndUpdate(
+        filter,
+        {
+          $setOnInsert: {
+            interviewerName: interview.category,
+            accountId: interview.userId,
+            scheduledInterviewId: interview._id,
+          },
+          $push: { responses: response },
+        },
+        {
+          new: true,
+          upsert: true,
+          runValidators: true,
+        }
+      ).lean();
+    } catch (error) {
+      if (error.code !== 11000) {
+        throw error;
+      }
+
+      updatedRecord = await UserResponse.findOneAndUpdate(
+        filter,
+        { $push: { responses: response } },
+        { new: true, runValidators: true }
+      ).lean();
+    }
+
+    return res.status(201).json({
+      success: true,
+      response,
+      responses: updatedRecord.responses,
+    });
+  } catch (error) {
+    console.error("Interview response save error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to save your response. Please try again.",
     });
   }
 });

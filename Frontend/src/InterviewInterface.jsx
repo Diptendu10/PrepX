@@ -2,8 +2,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Mic, MicOff } from "lucide-react";
 import { FaceLandmarker, FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  getInterviewResponses,
+  saveInterviewResponse,
+  uploadInterviewCv,
+} from "./services/interviews.js";
 
+const MAX_CV_SIZE = 1024 * 1024;
 const SHOULDER_WIDTH_CM_ESTIMATE = 40;
 const MOVEMENT_LIMIT_CM = 3;
 const ROTATION_LIMIT_DEGREES = 25;
@@ -49,6 +55,7 @@ function getBodyPosition(landmarks) {
 
 export default function InterviewInterface() {
   const navigate = useNavigate();
+  const { id: interviewId } = useParams();
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -63,9 +70,53 @@ export default function InterviewInterface() {
   const [voiceError, setVoiceError] = useState("");
   const [messages, setMessages] = useState([]);
   const [isSending, setIsSending] = useState(false);
+  const [isLoadingResponses, setIsLoadingResponses] = useState(true);
+  const [responseError, setResponseError] = useState("");
+  const [cvFile, setCvFile] = useState(null);
+  const [cvError, setCvError] = useState("");
+  const [cvStatus, setCvStatus] = useState("");
+  const [isUploadingCv, setIsUploadingCv] = useState(false);
   const [warningCount, setWarningCount] = useState(0);
   const [motionStatus, setMotionStatus] = useState("");
   const [motionError, setMotionError] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadResponses() {
+      try {
+        const savedResponses = await getInterviewResponses(interviewId);
+        if (isMounted) {
+          setMessages(
+            savedResponses.map((savedResponse, index) => ({
+              id: `${interviewId}-${index}`,
+              text: savedResponse,
+              sender: "You",
+            }))
+          );
+          setResponseError("");
+        }
+      } catch (error) {
+        if (isMounted) {
+          setResponseError(
+            error.message || "Unable to load your interview responses."
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingResponses(false);
+        }
+      }
+    }
+
+    setMessages([]);
+    setIsLoadingResponses(true);
+    loadResponses();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [interviewId]);
 
   async function requestCameraPermission() {
     setCameraError("");
@@ -385,24 +436,85 @@ export default function InterviewInterface() {
     };
   }, [isCameraOn, isStarted]);
 
-  function sendMessage(event) {
+  async function sendMessage(event) {
     event.preventDefault();
 
     const trimmedMessage = message.trim();
 
     if (!trimmedMessage || isSending) return;
 
-    setMessages((previous) => [
-      ...previous,
-      {
-        id: `${Date.now()}-${previous.length}`,
-        text: trimmedMessage,
-        sender: "You",
-      },
-    ]);
+    setIsSending(true);
+    setResponseError("");
+    try {
+      const savedResponse = await saveInterviewResponse(
+        interviewId,
+        trimmedMessage
+      );
+      setMessages((previous) => [
+        ...previous,
+        {
+          id: `${interviewId}-${previous.length}`,
+          text: savedResponse,
+          sender: "You",
+        },
+      ]);
+      setMessage("");
+    } catch (error) {
+      setResponseError(error.message || "Unable to save your response.");
+    } finally {
+      setIsSending(false);
+    }
+  }
 
-    setMessage("");
-    setIsSending(false);
+  function handleCvSelection(event) {
+    const file = event.target.files?.[0] || null;
+    setCvStatus("");
+
+    if (!file) {
+      setCvFile(null);
+      setCvError("");
+      return;
+    }
+
+    if (
+      !file.name.toLowerCase().endsWith(".pdf") ||
+      file.type !== "application/pdf"
+    ) {
+      setCvFile(null);
+      setCvError("Choose a PDF file to submit your CV.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size >= MAX_CV_SIZE) {
+      setCvFile(null);
+      setCvError("Your CV must be smaller than 1 MB.");
+      event.target.value = "";
+      return;
+    }
+
+    setCvFile(file);
+    setCvError("");
+  }
+
+  async function submitCv(event) {
+    event.preventDefault();
+    if (!cvFile || isUploadingCv) return;
+
+    const form = event.currentTarget;
+    setIsUploadingCv(true);
+    setCvError("");
+    setCvStatus("");
+    try {
+      const result = await uploadInterviewCv(interviewId, cvFile);
+      setCvFile(null);
+      setCvStatus(result.message || "CV submitted successfully.");
+      form.reset();
+    } catch (error) {
+      setCvError(error.message || "Unable to submit your CV.");
+    } finally {
+      setIsUploadingCv(false);
+    }
   }
 
   function toggleVoiceInput() {
@@ -562,6 +674,16 @@ export default function InterviewInterface() {
             </div>
 
             <div className="ii-camera-controls">
+              {!hasCameraAccess && !isStarted && (
+                <button
+                  type="button"
+                  className="ii-start-button"
+                  onClick={requestCameraPermission}
+                  disabled={isRequestingCamera}
+                >
+                  {isRequestingCamera ? "Requesting Camera..." : "Allow Camera"}
+                </button>
+              )}
               <button
                 type="button"
                 className="ii-camera-toggle"
@@ -630,7 +752,11 @@ export default function InterviewInterface() {
           </div>
 
           <div className="ii-chat-messages" aria-live="polite">
-            {messages.length === 0 ? (
+            {isLoadingResponses ? (
+              <p role="status">Loading your answers...</p>
+            ) : responseError && messages.length === 0 ? (
+              <p role="alert">{responseError}</p>
+            ) : messages.length === 0 ? (
               <div className="ii-chat-empty">
                 <div className="ii-chat-empty-icon">▤</div>
                 <h3>Your conversation starts here</h3>
@@ -648,6 +774,10 @@ export default function InterviewInterface() {
             )}
           </div>
 
+          {responseError && messages.length > 0 && (
+            <p role="alert">{responseError}</p>
+          )}
+
           {(isListening || voiceError) && (
             <p
               className={`ii-voice-status ${voiceError ? "ii-error" : ""}`}
@@ -663,6 +793,8 @@ export default function InterviewInterface() {
               value={message}
               onChange={(event) => setMessage(event.target.value)}
               onPaste={(event) => event.preventDefault()}
+              maxLength={2000}
+              disabled={isLoadingResponses || isSending}
               placeholder="Type your message..."
               aria-label="Type your message"
             />
@@ -676,7 +808,10 @@ export default function InterviewInterface() {
             >
               {isListening ? <Mic size={17} /> : <MicOff size={17} />}
             </button>
-            <button type="submit" disabled={!message.trim() || isSending}>
+            <button
+              type="submit"
+              disabled={!message.trim() || isLoadingResponses || isSending}
+            >
               Send
             </button>
           </form>
@@ -684,18 +819,40 @@ export default function InterviewInterface() {
       </section>
 
       <footer className="ii-footer">
-        <div className="ii-actions">
-          {!hasCameraAccess && !isStarted && (
-            <button
-              type="button"
-              className="ii-start-button"
-              onClick={requestCameraPermission}
-              disabled={isRequestingCamera}
-            >
-              {isRequestingCamera ? "Requesting Camera..." : "Allow Camera"}
-            </button>
+        <form className="ii-cv-form" onSubmit={submitCv}>
+          <div className="ii-cv-file-field">
+            <input
+              id="interview-cv"
+              type="file"
+              accept=".pdf,application/pdf"
+              aria-label="Choose CV PDF"
+              onChange={handleCvSelection}
+              disabled={isUploadingCv}
+            />
+            <small>(PDF, under 1 MB)</small>
+          </div>
+          <button
+            className="ii-cv-submit"
+            type="submit"
+            disabled={!cvFile || isUploadingCv}
+          >
+            {isUploadingCv ? "Submitting CV..." : "Submit CV"}
+          </button>
+          {cvFile && (
+            <p className="ii-cv-file-name">{cvFile.name}</p>
           )}
-
+          {cvError && (
+            <p className="ii-error" role="alert">
+              {cvError}
+            </p>
+          )}
+          {cvStatus && (
+            <p className="ii-cv-status" role="status">
+              {cvStatus}
+            </p>
+          )}
+        </form>
+        <div className="ii-actions">
           {isStarted && (
             <button
               type="button"

@@ -495,6 +495,18 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--cyan);outline-offse
   font-weight: 700;
 }
 
+.dashboard-schedule-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.dashboard-schedule-card-heading .dashboard-schedule-status-expired {
+  color: #a33a42;
+  background: #fff0f1;
+}
+
 .dashboard-schedule-card > p {
   margin: 0;
   color: #77778d;
@@ -3010,7 +3022,8 @@ gap: 0;
 
 .ii-camera-controls {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: 10px;
   margin-top: 12px;
 }
 
@@ -3108,6 +3121,67 @@ gap: 0;
   color: #85899b;
   font-size: 11px;
   line-height: 1.6;
+}
+
+.ii-cv-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px 12px;
+  min-width: 0;
+  max-width: 520px;
+}
+
+.ii-cv-file-field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ii-cv-form input[type="file"] {
+  width: 100%;
+  min-width: 0;
+  color: #6f7284;
+  font-size: 11px;
+}
+
+.ii-cv-file-field small {
+  color: #777b8e;
+  font-size: 10px;
+}
+
+.ii-cv-file-name,
+.ii-cv-status {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  line-height: 1.5;
+  grid-column: 1 / -1;
+}
+
+.ii-cv-file-name {
+  color: #6f7284;
+}
+
+.ii-cv-status {
+  color: #168658;
+}
+
+.ii-cv-submit {
+  padding: 9px 13px;
+  border: 0;
+  border-radius: 8px;
+  background: #5b5bd6;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ii-cv-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .ii-motion-status {
@@ -3356,7 +3430,19 @@ gap: 0;
 .ii-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
+  margin-left: auto;
+}
+
+.ii-cv-form .ii-error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.ii-camera-controls .ii-start-button {
+  width: auto;
+  padding: 9px 13px;
 }
 
 .ii-start-button,
@@ -3435,12 +3521,15 @@ gap: 0;
   }
 
   .ii-actions {
-    flex-direction: column-reverse;
-    align-items: stretch;
+    flex-direction: row;
+    justify-content: flex-end;
   }
 
-  .ii-start-button,
-  .ii-stop-button {
-    width: 100%;
+  .ii-cv-form {
+    max-width: none;
+  }
+
+  .ii-camera-controls .ii-start-button {
+    width: auto;
   }
 }

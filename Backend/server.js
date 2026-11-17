@@ -86,6 +86,12 @@ app.use(
   "/api/admin",
   require("./routes/adminRoutes")
 );
+app.use("/api", (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "API endpoint not found.",
+  });
+});
 // Error-handling middleware
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
